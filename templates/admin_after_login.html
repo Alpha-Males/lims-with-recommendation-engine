@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block body %}
+    {% for book in books %}
+
+    {% endfor %}
+
+    <a class="btn btn-primary" href="{{ url_for('admin_book_search') }}" role="button">search books</a>
+        <form action="" method="POST">
+            <div class="form-group">
+                <input type="text" name="bookname" class="form-control" placeholder="bookname" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="author" class="form-control" placeholder="author" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="quantity" class="form-control" placeholder="quantity" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="section" class="form-control" placeholder="section" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="serial_no" class="form-control" placeholder="serial no" required>
+            </div>
+        <button class="btn btn-primary" type="submit" >submit</button>
+    </form>
+    <a class="btn btn-primary" href="{{ url_for('user_after_login') }}" role="button">Return books</a>
+
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "layout.html"%}
+{% block body %}
+<form action="" method="POST">
+        <div class="form-group">
+            <input type="text" name="search" class="form-control" placeholder="search...." required>
+        </div>
+</form>
+
+
+<h1>Bookname {{ l1.bookname }}</h1>
+<h1>Author {{ l1.author }}</h1>
+<h1>Quantity {{ l1.quantity }}</h1>
+<h1>Section {{ l1.section }}</h1>
+<h1>Serial No {{ l1.serial_no }}</h1>
+
+
+{% endblock %}

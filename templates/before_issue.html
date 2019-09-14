@@ -2,11 +2,10 @@
 {% block body %}
 
 <h1>continue reading this</h1>
-<a class="btn btn-primary" href="{{ url_for('cpp') }}" role="button">C++</a>
-<a class="btn btn-primary" href="{{ url_for('java') }}" role="button">java</a>
-<a class="btn btn-primary" href="{{ url_for('java') }}" role="button">javascript</a>
-<a class="btn btn-primary" href="{{ url_for('alchemyst') }}" role="button">Alchemyst</a>
+    {% for key,value in l1 %}
 
-
+        <a class="btn btn-primary" href="{{ url_for(key) }}" role="button">{{ key }}</a>
+    {% endfor %}
 <a class="btn btn-primary" href="{{ url_for('issue') }}" role="button">Issue Book</a>
+
 {% endblock %}

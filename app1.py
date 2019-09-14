@@ -180,15 +180,20 @@ def login():
         else:
             if(password==password_data[0]):
                 flash('you are now loged in as '+username,'success')
-                return render_template('before_issue.html',username1=username)
+                l=db.execute("SELECT * FROM book_cout1").fetchone()
+                dict1={"cpp":l[0],
+                        "java":l[1],
+                        "javascript":l[2],
+                        "alchemyst":l[3]
+                }
+                dict2=sorted(dict1.items(), key = lambda kv:(kv[1], kv[0]),reverse=True)
+                return render_template('before_issue.html',username1=username,l1=dict2)
                 #return redirect(url_for('issue'))
             else:
                 flash('incorrect password','danger')
                 return render_template('login.html')
 
     return render_template('login.html')
-
-
 
 
 if(__name__=='__main__'):

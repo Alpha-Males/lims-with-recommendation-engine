@@ -76,7 +76,7 @@ def admin_book_search():
         username_data=db.execute("SELECT * FROM book WHERE bookname=:search",{'search':search}).fetchone()
         if username_data is None:
             flash('no book of this name is available here we will try to add it','danger')
-            db.execute("INSERT INTO book_reuired(book_name) VALUES(:username_data)",{'username_data':username_data})
+            db.execute("INSERT INTO book_req(name) VALUES(:username_data)",{'username_data':username_data})
             db.commit()
             return render_template('admin_book_search.html',l1=l)
         else:
@@ -96,9 +96,10 @@ def home():
 
 
 
-@app.route("/admin_after_login",methods=['GET','POST'])
-def admin_after_login():
 
+@app.route("/admin_insert_book",methods=['GET','POST'])
+
+def admin_insert_book():
     if(request.method=='POST'):
 
         bookname=request.form.get('bookname')
@@ -111,6 +112,14 @@ def admin_after_login():
             {'bookname':bookname,'author':author,'quantity':quantity,'section':section,'serial_no':serial_no})
         db.commit()
         flash('book inserted successfully','success')
+    return render_template('admin_insert_book.html')
+
+
+
+
+@app.route("/admin_after_login",methods=['GET','POST'])
+def admin_after_login():
+
     return render_template('admin_after_login.html')
 
 @app.route("/user_after_login",methods=['POST','GET'])
@@ -180,11 +189,13 @@ def login():
         else:
             if(password==password_data[0]):
                 flash('you are now loged in as '+username,'success')
+
                 l=db.execute("SELECT * FROM book_cout1").fetchone()
                 dict1={"cpp":l[0],
                         "java":l[1],
                         "javascript":l[2],
                         "alchemyst":l[3]
+
                 }
                 dict2=sorted(dict1.items(), key = lambda kv:(kv[1], kv[0]),reverse=True)
                 return render_template('before_issue.html',username1=username,l1=dict2)

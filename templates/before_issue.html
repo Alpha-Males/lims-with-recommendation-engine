@@ -3,8 +3,26 @@
 
 <h1>continue reading this</h1>
     {% for key,value in l1 %}
-
-        <a class="btn btn-primary" href="{{ url_for(key) }}" role="button">{{ key }}</a>
+        {% if key=="cpp" %}
+            <img src="{{ url_for('static',filename='cpp.jpg') }}" width="193" height="130" >
+             <a class="btn btn-primary" href="{{ url_for(key) }}" role="button">{{ key }}</a>
+        {% endif %}
+        {% if key=="java" %}
+            <img src="{{ url_for('static',filename='java.jpg') }}" width="193" height="130">
+             <a class="btn btn-primary" href="{{ url_for(key) }}" role="button">{{ key }}</a>
+        {% endif %}
+        {% if key=="javascript" %}
+            <img src="{{ url_for('static',filename='javascript.jpg') }}" width="193" height="130">
+             <a class="btn btn-primary" href="{{ url_for(key) }}" role="button">{{ key }}</a>
+        {% endif %}
+        {% if key=="alchemyst" %}
+            <img src="{{ url_for('static',filename='alchemyst.jpg') }}" width="193" height="130">
+             <a class="btn btn-primary" href="{{ url_for(key) }}" role="button">{{ key }}</a>
+        {% endif %}
+        {% if key=="python" %}
+            <img src="{{ url_for('static',filename='python.jpg') }}" width="193" height="130">
+             <a class="btn btn-primary" href="{{ url_for(key) }}" role="button">{{ key }}</a>
+        {% endif %}
     {% endfor %}
 <a class="btn btn-primary" href="{{ url_for('issue') }}" role="button">Issue Book</a>
 

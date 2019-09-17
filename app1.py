@@ -1,10 +1,11 @@
+import operator
 from flask import Flask,render_template,request,session,logging,url_for,redirect,flash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker,scoped_session
 from passlib.hash import sha256_crypt
 from flask_sqlalchemy import SQLAlchemy
 #from flask_whooshalchemy import wa
-
+from sqlalchemy.sql import text
 
 
 engine=create_engine("mysql+pymysql://root:@localhost/register")
@@ -23,38 +24,49 @@ app.config['WHOOSH_BASE']='whoosh'
 
 #db1=SQLAlchemy(app)
 
-post='now you can use the library'
+@app.route("/python",methods=['GET','POST'])
+def python():
+    db.execute(
+                  text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="python"'))
 
-@app.route("/count",methods=['GET','POST'])
-def count():
-    db.execute("UPDATE cc SET c = c+1 ")
     db.commit()
-    return render_template('count.html')
+    return render_template('python.html')
+
+
+
 
 @app.route("/cpp",methods=['GET','POST'])
 def cpp():
-    db.execute("UPDATE book_cout1 SET cpp = cpp+1 ")
+    db.execute(
+                  text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="cpp"'))
+
     db.commit()
     return render_template('cpp.html')
 
 
 @app.route("/javascript",methods=['GET','POST'])
 def javascript():
-    db.execute("UPDATE book_cout1 SET javascript = javascript+1 ")
+    db.execute(
+                  text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="javascript"'))
+
     db.commit()
     return render_template('javascript.html')
 
 @app.route("/java",methods=['GET','POST'])
 def java():
-    db.execute("UPDATE book_cout1 SET java = java+1 ")
+    db.execute(
+                  text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="java"'))
+
     db.commit()
     return render_template('java.html')
 
 
 @app.route("/alchemyst",methods=['GET','POST'])
 def alchemyst():
-
-    db.execute("UPDATE book_cout1 SET alchemyst = alchemyst+1 ")
+    #db.execute("UPDATE bookcount SET bookcount=bookcount+1 WHERE bookname==:ab",ab=b)
+    #db.execute("UPDATE book_cout1 SET alchemyst = alchemyst+1 ")
+    db.execute(
+                  text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="alchemyst"'))
     db.commit()
     return render_template('alchemyst.html')
 
@@ -87,6 +99,7 @@ def admin_book_search():
             l['serial_no']=username_data[4]
             return render_template('admin_book_search.html',l1=l)
     return render_template('admin_book_search.html',l1=l)
+
 @app.route("/")
 def home():
 
@@ -107,7 +120,8 @@ def admin_insert_book():
         quantity=request.form.get('quantity')
         section=request.form.get('section')
         serial_no=request.form.get('serial_no')
-
+        #db.execute("INSERT INTO Ibook(bookname) VALUES(:bookname)",{'bookname':bookname})
+        db.execute("INSERT INTO bookcn(bookname) VALUES(:bookname)",{'bookname':bookname})
         db.execute("INSERT INTO book(bookname,author,quantity,section,serial_no) VALUES(:bookname,:author,:quantity,:section,:serial_no)",
             {'bookname':bookname,'author':author,'quantity':quantity,'section':section,'serial_no':serial_no})
         db.commit()
@@ -154,7 +168,6 @@ def admin():
             else:
                 flash('incorrect password','danger')
                 return render_template('admin.html')
-
     return render_template('admin.html')
 
 @app.route("/registers",methods=['GET','POST'])
@@ -189,21 +202,12 @@ def login():
         else:
             if(password==password_data[0]):
                 flash('you are now loged in as '+username,'success')
-
-                l=db.execute("SELECT * FROM book_cout1").fetchone()
-                dict1={"cpp":l[0],
-                        "java":l[1],
-                        "javascript":l[2],
-                        "alchemyst":l[3]
-
-                }
-                dict2=sorted(dict1.items(), key = lambda kv:(kv[1], kv[0]),reverse=True)
-                return render_template('before_issue.html',username1=username,l1=dict2)
-                #return redirect(url_for('issue'))
+                l=db.execute("SELECT * FROM bookcn").fetchall()
+                l.sort(key=lambda x: x[1],reverse=True)
+                return render_template('before_issue.html',username1=username,l1=l)
             else:
                 flash('incorrect password','danger')
                 return render_template('login.html')
-
     return render_template('login.html')
 
 

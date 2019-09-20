@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 #from flask_whooshalchemy import wa
 from sqlalchemy.sql import text
 from flask_login import login_user, current_user, logout_user, login_required,LoginManager,UserMixin
-
+from collections import defaultdict
 
 engine=create_engine("mysql+pymysql://root:@localhost/register")
                     #(mysql)
@@ -68,6 +68,9 @@ def python():
     #print(current_user)
     t=current_user.retuser()
     print(t)
+    db.execute(
+                  text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="python" AND username=:username'),{'username':t})
+
     user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'python'}).fetchone()
     print(user1)
     if user1 is None:
@@ -84,6 +87,8 @@ def cpp():
                   text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="cpp"'))
     t=current_user.retuser()
     print(t)
+    db.execute(
+                  text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="cpp" AND username=:username'),{'username':t})
     user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'cpp'}).fetchone()
     print(user1)
     if user1 is None:
@@ -99,6 +104,8 @@ def javascript():
                   text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="javascript"'))
     t=current_user.retuser()
     print(t)
+    db.execute(
+                  text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="javascript" AND username=:username'),{'username':t})
     user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'javascript'}).fetchone()
     print(user1)
     if user1 is None:
@@ -112,10 +119,12 @@ def java():
                   text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="java"'))
     t=current_user.retuser()
     print(t)
-    user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'javascript'}).fetchone()
+    db.execute(
+                  text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="java" AND username=:username'),{'username':t})
+    user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'java'}).fetchone()
     print(user1)
     if user1 is None:
-        db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'javascript'})
+        db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'java'})
     db.commit()
     return render_template('java.html')
 
@@ -129,6 +138,8 @@ def alchemyst():
     t=current_user.retuser()
     print(t)
     #user1 = Usersbook.query.filter_by(username==t & bookname=='alchemyst').first()
+    db.execute(
+                  text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="alchemyst" AND username=:username'),{'username':t})
     user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'alchemyst'}).fetchone()
     print(user1)
     if user1 is None:
@@ -295,15 +306,103 @@ def login():
 def before_issue():
     if current_user.is_authenticated:
         rmdata=db.execute("SELECT * FROM usersbook").fetchall()
-        g=defaultdict(list)
-        for it in rmdata:
-            g['{}'.format(it[1])].append(it[2])
+        print(rmdata)
         #g will be use in future to make a dataset for apriori algorithm for recomendation
+        g=rmdata
+        #from app1 import g
+
+        rm1data=defaultdict(list)
+        for it in g:  #can't be able to handle it as tuple
+            print(type(it))
+            rm1data['{}'.format(it[1])].append((it[2],it[3]))
+
+
+
+        finaldata=defaultdict(list)
+        for k,v in rm1data.items():
+            #print(k,v)
+            for it1 in v:
+                finaldata['{}'.format(it1[0])].append((it1[1]))
+        #print(rmdata)
+
+        #print(finaldata)
+
+        s1=[]
+        l3=[]
+        i=0
+        for key,value in finaldata.items():
+            l3.append(value)
+            s1.append((key,i))
+            i+=1
+        #print(l)
+
+        import math as m
+
+        u=[[1,2,3,4,5],
+           [1,2,3,4,5],
+           [3,3,1,2,5],
+           [2,4,1,2,1],
+           [2,4,1,1,2]]
+
+        def average(u1):
+            sum=0
+            count=0
+            for l in u1:
+                sum+=l
+                count+=1;
+            return sum/count
+
+
+        def similarity(l,r):
+            g=0
+            s=0
+            p=0
+            for i in range(0,4):
+                g+=(l[i]-average(l))*(r[i]-average(r))
+            for i in range(0,4):
+                s+=(l[i]-average(l))**2
+            for i in range(0, 4):
+                p += (r[i] - average(l)) ** 2
+            return g/(m.sqrt(s)*m.sqrt(p))
+
+
+        #recomendation phase
+        p=[]
+
+        for j in range(0,4):
+            y=0
+            s=0
+            for i in range(0,5):
+                s+=similarity(l3[j],l3[i])*(l3[i][j]-average(l3[i]))
+            for i in range(0,5):
+                y+=abs(similarity(l3[j],l3[i]))
+            p.append((s+average(l3[j]))/y)
+
+
+        finalans=[]
+        for i in range(0,4):
+            finalans.append((p[i],s1[i]))
+
+
+        l4=sorted(finalans,reverse=True)
+
+
+        send=[]
+
+        for i in range(0,4):
+            send.append(l4[i][1][0])
+
+        for i in range(0,4):
+            print(send[i])
+
         l=db.execute("SELECT * FROM bookcn").fetchall()
         l.sort(key=lambda x: x[1],reverse=True)
-        return render_template('before_issue.html', l1=l)
+        return render_template('before_issue.html', l1=l,r=send)
     return redirect(url_for('login'))
 
+@app.route("/account")
+def account():
+    return render_template('account.html')
 
 
 

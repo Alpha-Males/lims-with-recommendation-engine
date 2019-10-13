@@ -12,6 +12,9 @@
 <h1>Quantity {{ l1.quantity }}</h1>
 <h1>Section {{ l1.section }}</h1>
 <h1>Serial No {{ l1.serial_no }}</h1>
-
+<h1>Issued By</h1>
+{% for i in l1.issuedby %}
+<h2>{{ i[0] }}</h2>
+{% endfor %}
 
 {% endblock %}

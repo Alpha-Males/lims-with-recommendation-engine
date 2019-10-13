@@ -1,7 +1,37 @@
 {% extends "layout.html"%}
 {% block body %}
+    <div class="content-section">
+        <div class="media">
+            <img class="rounded-circle account-img" src={{ img }}>
+            <div class="media-body">
+                <h2 class="account-heading">{{ current_user.username }}</h2>
+                <h2>your cart</h2>
 
-    <h1>{{ current_user }}</h1>
+                {% for i in data %}
+            <div class="col-md-2 col-xs-6">
+                <div class="post post-thumb">
+                    <a class="post-img" href=""><img src="{{ url_for('static',filename='{}.jpg'.format(i[0])) }}"height=200px width=160px></a>
+                    <h3>{{ i[0] }}</h3>
+                    <button class = btn-success onclick="window.location.href='{{ url_for('account', my_var1=i[0] ) }}'">issue</button>
+                </div>
+            </div>
+                {% endfor %}
 
+
+            </div>
+            <div>
+                <h2>your issued book</h2>
+                {% for i in data1 %}
+            <div class="col-md-2 col-xs-6">
+                <div class="post post-thumb">
+                    <a class="post-img" href=""><img src="{{ url_for('static',filename='{}.jpg'.format(i[0])) }}"height=200px width=160px></a>
+                    <h3>{{ i[0] }}</h3>
+                    <button class = btn-success onclick="window.location.href='{{ url_for('account', my_var2=i[0] ) }}'">Return</button>
+                </div>
+            </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

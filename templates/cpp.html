@@ -1,6 +1,21 @@
 {% extends "layout.html"%}
 {% block body %}
 
-<h1>Welcome</h1>
-
+<h1>cpp</h1>
+<h2>you may also like this</h2>
+{% for j in info %}
+<div class="section-row">
+<div class="col-md-2 col-xs-6">
+        <h3 class="post-title">Book-Name: {{ j[1] }}</h3>
+        <div class="post post-thumb">
+            <a class="post-img" href=""><img src="{{ url_for('static',filename='{}.jpg'.format(j[1])) }}"height=200px width=160px></a>
+            <button class = btn-success onclick="window.location.href='{{ url_for('cpp', my_var=j[1] ) }}'">Add to cart</button>
+        </div>
+        <div class="post-body">
+            <h5 class="post-title">Author: {{ j[2] }}</h5>
+            <h5 class="post-title">Section: {{ j[4] }}</h5>
+        </div>
+</div>
+</div>
+{% endfor %}
 {% endblock %}

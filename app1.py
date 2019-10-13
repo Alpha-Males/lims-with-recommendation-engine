@@ -9,8 +9,9 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from flask_login import login_user, current_user, logout_user, login_required,LoginManager,UserMixin
 from collections import defaultdict
+from datetime import date
 
-engine=create_engine("mysql+pymysql://root:@localhost/register")
+engine=create_engine("mysql+pymysql://root:@localhost/rohit")
                     #(mysql)
 
 
@@ -18,7 +19,7 @@ db=scoped_session(sessionmaker(bind=engine))
 
 app=Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI']='mysql+pymysql://root:@localhost/register'
+app.config['SQLALCHEMY_DATABASE_URI']='mysql+pymysql://root:@localhost/rohit'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 app.config['WHOOSH_BASE']='whoosh'
 
@@ -29,13 +30,17 @@ class Users(db1.Model, UserMixin):
     name = db1.Column(db1.String(20), unique=True, nullable=False)
     username= db1.Column(db1.String(120), unique=True, nullable=False)
     password = db1.Column(db1.String(60), nullable=False)
-
-    def __iter__(self):
-          for each in self.__dict__.keys():
-              yield self.__getattribute__(each)
+    #image_file = db1.Column(db1.String(20), nullable=False)
 
     def retuser(self):
         return self.name
+
+
+    def validate_username(self,username):
+        name=Users.query.filter_by(username=username).first()
+        if name:
+            raise ValidationError('this username is taken please take some other')
+
 
 
     def __repr__(self):
@@ -61,13 +66,46 @@ def load_user(user_id):
     return Users.query.get(user_id)
 
 
+
 @app.route("/python",methods=['GET','POST'])
 def python():
+    t=current_user.retuser()
+    l=request.args.get('my_var')
+    if(l!=None):
+        rec=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l}).fetchone()
+        if(rec==None):
+            db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
+            db.commit()
+    number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'python'}).fetchone()
+    import csv
+    import sys
+
+
+    #input number you want to search
+    #number = input('Enter number to find\n')
+
+    #read csv, and split on "," the line
+    csv_file = csv.reader(open('pair.csv', "r"), delimiter="|")
+
+    l1=set()
+    #loop through csv list
+    for row in csv_file:
+        #if current rows 2nd value is equal to input, print that row
+        for s1 in row:
+            if(s1==number[0]):
+                for i in row:
+                    l1.add(i)
+    l=list(l1)
+    info=[]
+    for i in range(len(l)):
+        g=db.execute('SELECT * FROM book WHERE serial_no=:serial_no',{'serial_no':l[i]}).fetchone()
+        info.append(g)
+
     db.execute(
                   text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="python"'))
     #print(current_user)
-    t=current_user.retuser()
-    print(t)
+
+
     db.execute(
                   text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="python" AND username=:username'),{'username':t})
 
@@ -76,34 +114,98 @@ def python():
     if user1 is None:
         db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'python'})
     db.commit()
-    return render_template('python.html')
-
+    return render_template('python.html',info=info)
 
 
 
 @app.route("/cpp",methods=['GET','POST'])
 def cpp():
+    t=current_user.retuser()
+    l=request.args.get('my_var')
+    if(l!=None):
+        rec=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l}).fetchone()
+        if(rec==None):
+            db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
+            db.commit()
+
+    number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'cpp'}).fetchone()
+
+    import csv
+    import sys
+
+
+    #input number you want to search
+    #number = input('Enter number to find\n')
+
+    #read csv, and split on "," the line
+    csv_file = csv.reader(open('pair.csv', "r"), delimiter="|")
+
+    l1=set()
+    #loop through csv list
+    for row in csv_file:
+        #if current rows 2nd value is equal to input, print that row
+        for s1 in row:
+            if(s1==number[0]):
+                for i in row:
+                    l1.add(i)
+    l=list(l1)
+
+    info=[]
+    for i in range(len(l)):
+        g=db.execute('SELECT * FROM book WHERE serial_no=:serial_no',{'serial_no':l[i]}).fetchone()
+        info.append(g)
     db.execute(
                   text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="cpp"'))
-    t=current_user.retuser()
-    print(t)
+
+
     db.execute(
                   text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="cpp" AND username=:username'),{'username':t})
     user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'cpp'}).fetchone()
-    print(user1)
     if user1 is None:
         db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'cpp'})
 
     db.commit()
-    return render_template('cpp.html')
+    return render_template('cpp.html',info=info)
 
 
 @app.route("/javascript",methods=['GET','POST'])
 def javascript():
+    t=current_user.retuser()
+    l=request.args.get('my_var')
+    if(l!=None):
+        rec=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l}).fetchone()
+        if(rec==None):
+            db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
+            db.commit()
+    number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'javascript'}).fetchone()
+
+    import csv
+    import sys
+
+
+    #input number you want to search
+    #number = input('Enter number to find\n')
+
+    #read csv, and split on "," the line
+    csv_file = csv.reader(open('pair.csv', "r"), delimiter="|")
+
+    l1=set()
+    #loop through csv list
+    for row in csv_file:
+        #if current rows 2nd value is equal to input, print that row
+        for s1 in row:
+            if(s1==number[0]):
+                for i in row:
+                    l1.add(i)
+    l=list(l1)
+
+    info=[]
+    for i in range(len(l)):
+        g=db.execute('SELECT * FROM book WHERE serial_no=:serial_no',{'serial_no':l[i]}).fetchone()
+        info.append(g)
     db.execute(
                   text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="javascript"'))
-    t=current_user.retuser()
-    print(t)
+
     db.execute(
                   text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="javascript" AND username=:username'),{'username':t})
     user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'javascript'}).fetchone()
@@ -111,14 +213,47 @@ def javascript():
     if user1 is None:
         db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'javascript'})
     db.commit()
-    return render_template('javascript.html')
+    return render_template('javascript.html',info=info)
 
 @app.route("/java",methods=['GET','POST'])
 def java():
+    t=current_user.retuser()
+    l=request.args.get('my_var')
+    if(l!=None):
+        rec=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l}).fetchone()
+        if(rec==None):
+            db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
+            db.commit()
+    number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'java'}).fetchone()
+
+    import csv
+    import sys
+
+
+    #input number you want to search
+    #number = input('Enter number to find\n')
+
+    #read csv, and split on "," the line
+    csv_file = csv.reader(open('pair.csv', "r"), delimiter="|")
+
+    l1=set()
+    #loop through csv list
+    for row in csv_file:
+        #if current rows 2nd value is equal to input, print that row
+        for s1 in row:
+            if(s1==number[0]):
+                for i in row:
+                    l1.add(i)
+    l=list(l1)
+
+    info=[]
+    for i in range(len(l)):
+        g=db.execute('SELECT * FROM book WHERE serial_no=:serial_no',{'serial_no':l[i]}).fetchone()
+        info.append(g)
     db.execute(
                   text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="java"'))
-    t=current_user.retuser()
-    print(t)
+
+
     db.execute(
                   text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="java" AND username=:username'),{'username':t})
     user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'java'}).fetchone()
@@ -126,17 +261,48 @@ def java():
     if user1 is None:
         db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'java'})
     db.commit()
-    return render_template('java.html')
+    return render_template('java.html',info=info)
 
 
 @app.route("/alchemyst",methods=['GET','POST'])
 def alchemyst():
+    t=current_user.retuser()
+    l=request.args.get('my_var')
+    if(l!=None):
+        rec=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l}).fetchone()
+        if(rec==None):
+            db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
+            db.commit()
+    number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'alchemyst'}).fetchone()
     #db.execute("UPDATE bookcount SET bookcount=bookcount+1 WHERE bookname==:ab",ab=b)
     #db.execute("UPDATE book_cout1 SET alchemyst = alchemyst+1 ")
+
+    import csv
+    import sys
+
+
+    #input number you want to search
+    #number = input('Enter number to find\n')
+
+    #read csv, and split on "," the line
+    csv_file = csv.reader(open('pair.csv', "r"), delimiter="|")
+
+    l1=set()
+    #loop through csv list
+    for row in csv_file:
+        #if current rows 2nd value is equal to input, print that row
+        for s1 in row:
+            if(s1==number[0]):
+                for i in row:
+                    l1.add(i)
+    l=list(l1)
+    info=[]
+    for i in range(len(l)):
+        g=db.execute('SELECT * FROM book WHERE serial_no=:serial_no',{'serial_no':l[i]}).fetchone()
+        info.append(g)
     db.execute(
                   text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="alchemyst"'))
-    t=current_user.retuser()
-    print(t)
+
     #user1 = Usersbook.query.filter_by(username==t & bookname=='alchemyst').first()
     db.execute(
                   text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="alchemyst" AND username=:username'),{'username':t})
@@ -145,36 +311,377 @@ def alchemyst():
     if user1 is None:
         db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'alchemyst'})
     db.commit()
-    return render_template('alchemyst.html')
+    return render_template('alchemyst.html',info=info)
+
+@app.route("/CN",methods=['GET','POST'])
+def CN():
+    t=current_user.retuser()
+    l=request.args.get('my_var')
+    if(l!=None):
+        rec=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l}).fetchone()
+        if(rec==None):
+            db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
+            db.commit()
+    number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'CN'}).fetchone()
+    import csv
+    import sys
+
+    csv_file = csv.reader(open('pair.csv', "r"), delimiter="|")
+
+    l1=set()
+    #loop through csv list
+    for row in csv_file:
+        #if current rows 2nd value is equal to input, print that row
+        for s1 in row:
+            if(s1==number[0]):
+                for i in row:
+                    l1.add(i)
+    l=list(l1)
+    info=[]
+    for i in range(len(l)):
+        g=db.execute('SELECT * FROM book WHERE serial_no=:serial_no',{'serial_no':l[i]}).fetchone()
+        info.append(g)
+    db.execute(
+                  text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="CN"'))
 
 
-@app.route("/issue",methods=['GET','POST'])
-def issue():
-    if(request.method=='POST'):
-        search=request.form.get('search')
-        db.execute("UPDATE book SET quantity = quantity-1 WHERE bookname=:search",{'search':search})
-        db.commit()
-    return render_template('issue.html')
+    db.execute(
+                  text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="CN" AND username=:username'),{'username':t})
+    user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'CN'}).fetchone()
+    print(user1)
+    if user1 is None:
+        db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'CN'})
+    db.commit()
+    return render_template('CN.html',info=info)
+
+@app.route("/DBMS",methods=['GET','POST'])
+def DBMS():
+    t=current_user.retuser()
+    l=request.args.get('my_var')
+    if(l!=None):
+        rec=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l}).fetchone()
+        if(rec==None):
+            db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
+            db.commit()
+    number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'DBMS'}).fetchone()
+
+    import csv
+    import sys
+
+    csv_file = csv.reader(open('pair.csv', "r"), delimiter="|")
+
+    l1=set()
+    #loop through csv list
+    for row in csv_file:
+        #if current rows 2nd value is equal to input, print that row
+        for s1 in row:
+            if(s1==number[0]):
+                for i in row:
+                    l1.add(i)
+    l=list(l1)
+
+    info=[]
+    for i in range(len(l)):
+        g=db.execute('SELECT * FROM book WHERE serial_no=:serial_no',{'serial_no':l[i]}).fetchone()
+        info.append(g)
+    db.execute(
+                  text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="DBMS"'))
+
+
+    db.execute(
+                  text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="DBMS" AND username=:username'),{'username':t})
+    user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'DBMS'}).fetchone()
+    print(user1)
+    if user1 is None:
+        db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'DBMS'})
+    db.commit()
+    return render_template('DBMS.html',info=info)
+
+@app.route("/CG",methods=['GET','POST'])
+def CG():
+    t=current_user.retuser()
+    l=request.args.get('my_var')
+    if(l!=None):
+        rec=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l}).fetchone()
+        if(rec==None):
+            db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
+            db.commit()
+    number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'CG'}).fetchone()
+    import csv
+    import sys
+
+    csv_file = csv.reader(open('pair.csv', "r"), delimiter="|")
+
+    l1=set()
+    #loop through csv list
+    for row in csv_file:
+        #if current rows 2nd value is equal to input, print that row
+        for s1 in row:
+            if(s1==number[0]):
+                for i in row:
+                    l1.add(i)
+    l=list(l1)
+
+    info=[]
+    for i in range(len(l)):
+        g=db.execute('SELECT * FROM book WHERE serial_no=:serial_no',{'serial_no':l[i]}).fetchone()
+        info.append(g)
+    db.execute(
+                  text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="CG"'))
+
+    db.execute(
+                  text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="CG" AND username=:username'),{'username':t})
+    user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'CG'}).fetchone()
+    print(user1)
+    if user1 is None:
+        db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'CG'})
+    db.commit()
+    return render_template('CG.html',info=info)
+
+@app.route("/ADS",methods=['GET','POST'])
+def ADS():
+    t=current_user.retuser()
+    l=request.args.get('my_var')
+    if(l!=None):
+        rec=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l}).fetchone()
+        if(rec==None):
+            db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
+            db.commit()
+
+    number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'ADS'}).fetchone()
+    import csv
+    import sys
+
+    csv_file = csv.reader(open('pair.csv', "r"), delimiter="|")
+
+    l1=set()
+    #loop through csv list
+    for row in csv_file:
+        #if current rows 2nd value is equal to input, print that row
+        for s1 in row:
+            if(s1==number[0]):
+                for i in row:
+                    l1.add(i)
+    l=list(l1)
+
+    info=[]
+    for i in range(len(l)):
+        g=db.execute('SELECT * FROM book WHERE serial_no=:serial_no',{'serial_no':l[i]}).fetchone()
+        info.append(g)
+    db.execute(
+                  text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="ADS"'))
+
+    db.execute(
+                  text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="ADS" AND username=:username'),{'username':t})
+    user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'ADS'}).fetchone()
+    print(user1)
+    if user1 is None:
+        db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'ADS'})
+    db.commit()
+    return render_template('ADS.html',info=info)
+
+@app.route("/DS",methods=['GET','POST'])
+def DS():
+    t=current_user.retuser()
+    l=request.args.get('my_var')
+    if(l!=None):
+        rec=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l}).fetchone()
+        if(rec==None):
+            db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
+            db.commit()
+
+    number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'DS'}).fetchone()
+    import csv
+    import sys
+
+    csv_file = csv.reader(open('pair.csv', "r"), delimiter="|")
+
+    l1=set()
+    #loop through csv list
+    for row in csv_file:
+        #if current rows 2nd value is equal to input, print that row
+        for s1 in row:
+            if(s1==number[0]):
+                for i in row:
+                    l1.add(i)
+    l=list(l1)
+
+    info=[]
+    for i in range(len(l)):
+        g=db.execute('SELECT * FROM book WHERE serial_no=:serial_no',{'serial_no':l[i]}).fetchone()
+        info.append(g)
+    db.execute(
+                  text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="DS"'))
+
+
+    db.execute(
+                  text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="DS" AND username=:username'),{'username':t})
+    user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'DS'}).fetchone()
+    print(user1)
+    if user1 is None:
+        db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'DS'})
+    db.commit()
+    return render_template('DS.html',info=info)
+
+@app.route("/SEPM",methods=['GET','POST'])
+def SEPM():
+    t=current_user.retuser()
+    l=request.args.get('my_var')
+    if(l!=None):
+        rec=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l}).fetchone()
+        if(rec==None):
+            db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
+            db.commit()
+
+    number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'SEPM'}).fetchone()
+    import csv
+    import sys
+
+    csv_file = csv.reader(open('pair.csv', "r"), delimiter="|")
+
+    l1=set()
+    #loop through csv list
+    for row in csv_file:
+        #if current rows 2nd value is equal to input, print that row
+        for s1 in row:
+            if(s1==number[0]):
+                for i in row:
+                    l1.add(i)
+    l=list(l1)
+
+    info=[]
+    for i in range(len(l)):
+        g=db.execute('SELECT * FROM book WHERE serial_no=:serial_no',{'serial_no':l[i]}).fetchone()
+        info.append(g)
+    db.execute(
+                  text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="SEPM"'))
+
+
+    db.execute(
+                  text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="SEPM" AND username=:username'),{'username':t})
+    user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'SEPM'}).fetchone()
+    print(user1)
+    if user1 is None:
+        db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'SEPM'})
+    db.commit()
+    return render_template('SEPM.html',info=info)
+
+@app.route("/ISEE",methods=['GET','POST'])
+def ISEE():
+    t=current_user.retuser()
+    l=request.args.get('my_var')
+    if(l!=None):
+        rec=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l}).fetchone()
+        if(rec==None):
+            db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
+            db.commit()
+    number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'ISEE'}).fetchone()
+    import csv
+    import sys
+
+    csv_file = csv.reader(open('pair.csv', "r"), delimiter="|")
+
+    l1=set()
+    #loop through csv list
+    for row in csv_file:
+        #if current rows 2nd value is equal to input, print that row
+        for s1 in row:
+            if(s1==number[0]):
+                for i in row:
+                    l1.add(i)
+    l=list(l1)
+
+    info=[]
+    for i in range(len(l)):
+        g=db.execute('SELECT * FROM book WHERE serial_no=:serial_no',{'serial_no':l[i]}).fetchone()
+        info.append(g)
+    db.execute(
+                  text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="ISEE"'))
+
+    db.execute(
+                  text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="ISEE" AND username=:username'),{'username':t})
+    user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'ISEE'}).fetchone()
+    print(user1)
+    if user1 is None:
+        db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'ISEE'})
+    db.commit()
+    return render_template('ISEE.html',info=info)
+
+@app.route("/ml",methods=['GET','POST'])
+def ml():
+    t=current_user.retuser()
+    l=request.args.get('my_var')
+    if(l!=None):
+        rec=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l}).fetchone()
+        if(rec==None):
+            db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
+            db.commit()
+    number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'ml'}).fetchone()
+    #db.execute("UPDATE bookcount SET bookcount=bookcount+1 WHERE bookname==:ab",ab=b)
+    #db.execute("UPDATE book_cout1 SET ml = ml+1 ")
+
+    import csv
+    import sys
+
+
+    #input number you want to search
+    #number = input('Enter number to find\n')
+
+    #read csv, and split on "," the line
+    csv_file = csv.reader(open('pair.csv', "r"), delimiter="|")
+
+    l1=set()
+    #loop through csv list
+    for row in csv_file:
+        #if current rows 2nd value is equal to input, print that row
+        for s1 in row:
+            if(s1==number[0]):
+                for i in row:
+                    l1.add(i)
+    l=list(l1)
+    info=[]
+    for i in range(len(l)):
+        g=db.execute('SELECT * FROM book WHERE serial_no=:serial_no',{'serial_no':l[i]}).fetchone()
+        if(g!=None):
+            info.append(g)
+    db.execute(
+                  text('UPDATE bookcn SET bookcount=bookcount+1 WHERE bookname="ml"'))
+    print(t)
+    #user1 = Usersbook.query.filter_by(username==t & bookname=='ml').first()
+    db.execute(
+                  text('UPDATE usersbook SET bookcount=bookcount+1 WHERE bookname="ml" AND username=:username'),{'username':t})
+    user1=db.execute("SELECT bookname FROM usersbook WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':'ml'}).fetchone()
+    print(user1)
+    if user1 is None:
+        db.execute("INSERT INTO usersbook(username,bookname) VALUES(:username,:bookname)",{'username':t,'bookname':'ml'})
+    db.commit()
+    return render_template('ml.html',info=info)
+
+
 
 
 @app.route("/admin_book_search",methods=['GET','POST'])
 def admin_book_search():
-    l={'bookname':'','author':'','quantity':'','section':'','serial_no':''}
+    l={'bookname':'','author':'','quantity':'','section':'','serial_no':'','issuedby':''}
     if(request.method=='POST'):
         search=request.form.get('search')
         username_data=db.execute("SELECT * FROM book WHERE bookname=:search",{'search':search}).fetchone()
+        issuedby_data=db.execute("SELECT username FROM issue WHERE bookname=:bookname",{'bookname':search}).fetchall()
+        size=int(len(issuedby_data))
         if username_data is None:
             flash('no book of this name is available here we will try to add it','danger')
-            db.execute("INSERT INTO book_req(name) VALUES(:username_data)",{'username_data':username_data})
-            db.commit()
+            #db.execute("INSERT INTO book_req(name) VALUES(:username_data)",{'username_data':username_data})
+            #db.commit()
             return render_template('admin_book_search.html',l1=l)
         else:
-            l['bookname']=username_data[0]
-            l['author']=username_data[1]
-            l['quantity']=username_data[2]
-            l['section']=username_data[3]
-            l['serial_no']=username_data[4]
-            return render_template('admin_book_search.html',l1=l)
+            l['bookname']=username_data[1]
+            l['author']=username_data[2]
+            l['quantity']=username_data[3]
+            l['section']=username_data[4]
+            l['serial_no']=username_data[5]
+            l['issuedby']=issuedby_data
+            return render_template('admin_book_search.html',l1=l,size=size)
+
     return render_template('admin_book_search.html',l1=l)
 
 @app.route("/")
@@ -191,7 +698,6 @@ def home():
 
 def admin_insert_book():
     if(request.method=='POST'):
-
         bookname=request.form.get('bookname')
         author=request.form.get('author')
         quantity=request.form.get('quantity')
@@ -203,7 +709,7 @@ def admin_insert_book():
         db.execute("INSERT INTO book(bookname,author,quantity,section,serial_no) VALUES(:bookname,:author,:quantity,:section,:serial_no)",
             {'bookname':bookname,'author':author,'quantity':quantity,'section':section,'serial_no':serial_no})
 
-        connection.commit()
+        #connection.commit()
         db.commit()
         flash('book inserted successfully','success')
     return render_template('admin_insert_book.html')
@@ -258,17 +764,23 @@ def registers():
         password=request.form.get('password')
         confirm=request.form.get('confirm')
         #secure_password=sha256_crypt.encrypt(str(password))
-        if password==confirm:
-            db.execute("INSERT INTO users(name,username,password) VALUES(:name,:username,:password)",
-                {'name':name,'username':username,'password':password})
-            #db.execute()
-            db.commit()
-            flash('you can login now','success')
-            return redirect(url_for('login'))
+        user_data=db.execute("SELECT username FROM users WHERE username=:username",{'username':username}).fetchone()
+        if user_data is not  None:
+            flash('username already available please use some other','danger')
         else:
-            flash('password does not match','danger')
-            return render_template('registers.html')
+            if password==confirm:
+                db.execute("INSERT INTO users(name,username,password) VALUES(:name,:username,:password)",
+                    {'name':name,'username':username,'password':password})
+                #db.execute()
+                db.commit()
+                flash('you can login now','success')
+                return redirect(url_for('login'))
+            else:
+                flash('password does not match','danger')
+                return render_template('registers.html')
+
     return render_template('registers.html')
+
 
 @app.route("/login",methods=['GET','POST'])
 def login():
@@ -305,104 +817,46 @@ def login():
 @app.route('/before_issue')
 def before_issue():
     if current_user.is_authenticated:
-        rmdata=db.execute("SELECT * FROM usersbook").fetchall()
-        print(rmdata)
         #g will be use in future to make a dataset for apriori algorithm for recomendation
-        g=rmdata
-        #from app1 import g
 
-        rm1data=defaultdict(list)
-        for it in g:  #can't be able to handle it as tuple
-            print(type(it))
-            rm1data['{}'.format(it[1])].append((it[2],it[3]))
-
-
-
-        finaldata=defaultdict(list)
-        for k,v in rm1data.items():
-            #print(k,v)
-            for it1 in v:
-                finaldata['{}'.format(it1[0])].append((it1[1]))
-        #print(rmdata)
-
-        #print(finaldata)
-
-        s1=[]
-        l3=[]
-        i=0
-        for key,value in finaldata.items():
-            l3.append(value)
-            s1.append((key,i))
-            i+=1
-        #print(l)
-
-        import math as m
-
-        u=[[1,2,3,4,5],
-           [1,2,3,4,5],
-           [3,3,1,2,5],
-           [2,4,1,2,1],
-           [2,4,1,1,2]]
-
-        def average(u1):
-            sum=0
-            count=0
-            for l in u1:
-                sum+=l
-                count+=1;
-            return sum/count
-
-
-        def similarity(l,r):
-            g=0
-            s=0
-            p=0
-            for i in range(0,4):
-                g+=(l[i]-average(l))*(r[i]-average(r))
-            for i in range(0,4):
-                s+=(l[i]-average(l))**2
-            for i in range(0, 4):
-                p += (r[i] - average(l)) ** 2
-            return g/(m.sqrt(s)*m.sqrt(p))
-
-
-        #recomendation phase
-        p=[]
-
-        for j in range(0,4):
-            y=0
-            s=0
-            for i in range(0,5):
-                s+=similarity(l3[j],l3[i])*(l3[i][j]-average(l3[i]))
-            for i in range(0,5):
-                y+=abs(similarity(l3[j],l3[i]))
-            p.append((s+average(l3[j]))/y)
-
-
-        finalans=[]
-        for i in range(0,4):
-            finalans.append((p[i],s1[i]))
-
-
-        l4=sorted(finalans,reverse=True)
-
-
-        send=[]
-
-        for i in range(0,4):
-            send.append(l4[i][1][0])
-
-        for i in range(0,4):
-            print(send[i])
 
         l=db.execute("SELECT * FROM bookcn").fetchall()
         l.sort(key=lambda x: x[1],reverse=True)
-        return render_template('before_issue.html', l1=l,r=send)
+        l2=l[0:12]
+        print(l2)
+        return render_template('before_issue.html', l1=l2)
     return redirect(url_for('login'))
 
 @app.route("/account")
 def account():
-    return render_template('account.html')
+    t=current_user.retuser()
+    data=db.execute("SELECT bookname FROM userscart WHERE username=:username",{'username':t}).fetchall()
+    #print(data)
+    today = date.today()
+    print(today)
+    l2=request.args.get('my_var1')
+    rec=db.execute("SELECT bookname FROM issue WHERE bookname=:bookname AND username=:username",{'bookname':l2,'username':t}).fetchone()
+    count=db.execute("SELECT count(bookname) FROM issue WHERE username=:username",{'username':t}).fetchone()
+    if(count[0]>3):
+        flash('you are not allowed to issue more than four book','danger')
+    elif(rec==None and l2!=None):
+        db.execute("INSERT INTO issue(username,issuedate,bookname) VALUES(:username,:issuedate,:bookname)",
+                        {'username':t,'issuedate':today,'bookname':l2})
+        db.execute("UPDATE book SET quantity = quantity-1 WHERE bookname=:search",{'search':l2})
+                #db.execute()
+        db.commit()
+    data1=db.execute("SELECT bookname FROM userscart WHERE bookname=:bookname",{'bookname':l2}).fetchone()
+    if(data!=None and rec!=None):
+        db.execute("DELETE FROM userscart WHERE bookname=:bookname",{'bookname':l2})
+        db.commit()
+    data1=db.execute("SELECT bookname FROM issue WHERE username=:username",{'username':t}).fetchall()
+    ret_book=request.args.get('my_var2')
+
+    if(ret_book!=None):
+        db.execute("DELETE FROM issue WHERE username=:username AND bookname=:bookname",{'username':t,'bookname':ret_book})
+        db.execute("UPDATE book SET quantity = quantity+1 WHERE bookname=:search",{'search':ret_book})
+        db.commit()
+    return render_template('account.html',data=data,data1=data1)
 
 
 
@@ -410,9 +864,9 @@ def account():
 @login_required
 def logout():
     logout_user()
-    return redirect('login')
+    return redirect('/')
 
 
 if(__name__=='__main__'):
     app.secret_key="123456daily"
-    app.run(debug=True)
+    app.run(debug=True,port=8082)

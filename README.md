@@ -11,10 +11,17 @@
       
 **Prerequisites**
 ------------------
-Install flask and 2 of its extensions flask-sqlalchemy and flask-login 
-Install An ORM sqlalchemy
+Install dependencies using pip3 install -r requirements.txt
+<br>
+start mysql using service mysql start and import database using
+<br>
+mysql -u root -p lims < dbexport.sql
 
-
+grant privilage to user root to access database lims 
+<br>
+if problem persists refer
+<br>
+https://stackoverflow.com/questions/39281594/error-1698-28000-access-denied-for-user-rootlocalhost
 
 
 **using** 

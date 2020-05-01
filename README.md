@@ -37,11 +37,13 @@ https://stackoverflow.com/questions/39281594/error-1698-28000-access-denied-for-
     
 **TODO**
 ---------
-- [ ] Redirect issue when issuing book from cart. 
+- [ ] Redirect issue when issuing  and returning book but can be sloved easily by refactoring account route. 
+- [ ] variable names must be changed for readabiliy, maintainability and Understandability. 
 - [ ] Code should be refactored to reduce number of html page in template folder.
 - [ ] Make a single route for all the book and which works on addition of any book in future.
 - [ ] Design better schema for database.
-- [ ] Remove dependency from ORM sqlalchemy dependent code should be proted to flask-sqlalchmey.
+- [ ] Remove dependency from sqlalchemy ORM and therefore dependent code should be proted to flask-sqlalchmey.
+- [ ] Better UI for account page 
 
 
 **Contributing**

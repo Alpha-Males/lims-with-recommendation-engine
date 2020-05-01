@@ -70,7 +70,7 @@ def python():
             db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
             db.commit()
     number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'python'}).fetchone()
-    process('python',number,t)
+    info=process('python',number,t)
 
 
 
@@ -94,7 +94,7 @@ def cpp():
             db.commit()
 
     number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'cpp'}).fetchone()
-    process('cpp',number,t)
+    info=process('cpp',number,t)
     return render_template('cpp.html',info=info)
 
 
@@ -111,7 +111,7 @@ def javascript():
 
 
 
-    process('javascript',number,t)
+    info=process('javascript',number,t)
 
     return render_template('javascript.html',info=info)
 
@@ -125,7 +125,7 @@ def java():
             db.execute("INSERT INTO userscart(bookname,username) VALUES(:bookname,:username)",{'bookname':l,'username':t})
             db.commit()
     number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'java'}).fetchone()
-    process('java',number,t)
+    info=process('java',number,t)
     return render_template('java.html',info=info)
 
 
@@ -141,7 +141,7 @@ def alchemy():
     number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'alchemyst'}).fetchone()
     #db.execute("UPDATE bookcount SET bookcount=bookcount+1 WHERE bookname==:ab",ab=b)
     #db.execute("UPDATE book_cout1 SET alchemyst = alchemyst+1 ")
-    process('alchemyst',t)
+    info=process('alchemyst',t)
     return render_template('alchemyst.html',info=info)
 
 @app.route("/CN",methods=['GET','POST'])
@@ -168,7 +168,7 @@ def DBMS():
             db.commit()
     number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'DBMS'}).fetchone()
 
-    process('DBMS',number,t)
+    info=process('DBMS',number,t)
     return render_template('DBMS.html',info=info)
 
 @app.route("/CG",methods=['GET','POST'])
@@ -182,7 +182,7 @@ def CG():
             db.commit()
     number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'CG'}).fetchone()
 
-    process('CG',number,t)
+    info=process('CG',number,t)
     return render_template('CG.html',info=info)
 
 @app.route("/ADS",methods=['GET','POST'])
@@ -197,7 +197,7 @@ def ADS():
 
     number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'ADS'}).fetchone()
 
-    process('ADS',number,t)
+    info=process('ADS',number,t)
     return render_template('ADS.html',info=info)
 
 @app.route("/DS",methods=['GET','POST'])
@@ -211,7 +211,7 @@ def DS():
             db.commit()
 
     number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'DS'}).fetchone()
-    process('DS',number,t)
+    info=process('DS',number,t)
 
     return render_template('DS.html',info=info)
 
@@ -227,7 +227,7 @@ def SEPM():
 
     number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'SEPM'}).fetchone()
 
-    process('SEPM',number,t)
+    info=process('SEPM',number,t)
     return render_template('SEPM.html',info=info)
 
 @app.route("/ISEE",methods=['GET','POST'])
@@ -241,7 +241,7 @@ def ISEE():
             db.commit()
     number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'ISEE'}).fetchone()
 
-    process('ISEE',number,t)
+    info=process('ISEE',number,t)
     return render_template('ISEE.html',info=info)
 
 @app.route("/ml",methods=['GET','POST'])
@@ -256,7 +256,7 @@ def ml():
     number=db.execute("SELECT serial_no FROM book WHERE bookname=:bookname",{'bookname':'ml'}).fetchone()
     #db.execute("UPDATE bookcount SET bookcount=bookcount+1 WHERE bookname==:ab",ab=b)
     #db.execute("UPDATE book_cout1 SET ml = ml+1 ")
-    process('ml',number,t)
+    info=process('ml',number,t)
     return render_template('ml.html',info=info)
 
 

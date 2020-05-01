@@ -45,7 +45,7 @@ def process(bookname, bookid, loggedin_user):
        5 book type
        6 book id
     """
-    csv_file = csv.reader(open("pair.csv", "r"), delimiter="|")
+    csv_file = csv.reader(open("util/pair.csv", "r"), delimiter="|")
 
     l1 = set()
     # loop through csv list

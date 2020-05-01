@@ -43,7 +43,7 @@ https://stackoverflow.com/questions/39281594/error-1698-28000-access-denied-for-
 - [ ] Make a single route for all the book and which works on addition of any book in future.
 - [ ] Design better schema for database.
 - [ ] Remove dependency from sqlalchemy ORM and therefore dependent code should be proted to flask-sqlalchmey.
-
+- [ ] Better UI for account page 
 
 
 **Contributing**

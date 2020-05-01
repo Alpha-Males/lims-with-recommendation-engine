@@ -31,7 +31,7 @@ https://stackoverflow.com/questions/39281594/error-1698-28000-access-denied-for-
     cd flask_web_App
     virtualenv venv
     source venv/bin/activate
-    pip install -r requirements.txt
+    pip3 install -r requirements.txt
     open the teminal and fire ``python3 run.py``    
     
     

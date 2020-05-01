@@ -11,7 +11,8 @@
       
 **Prerequisites**
 ------------------
-
+Install flask and 2 of its extensions flask-sqlalchemy and flask-login 
+Install An ORM sqlalchemy
 
 
 
@@ -29,7 +30,11 @@
     
 **TODO**
 ---------
-
+- [ ] Redirect issue when issuing book from cart. 
+- [ ] Code should be refactored to reduce number of html page in template folder.
+- [ ] Make a single route for all the book and which works on addition of any book in future.
+- [ ] Design better schema for database.
+- [ ] Remove dependency from ORM sqlalchemy dependent code should be proted to flask-sqlalchmey.
 
 
 **Contributing**

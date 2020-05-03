@@ -13,12 +13,33 @@
 ------------------
 Install dependencies using pip3 install -r requirements.txt
 <br>
+
 start mysql using service mysql start and import database using
 <br>
 mysql -u root -p lims < dbexport.sql
 
-grant privilage to user root to access database lims 
+grant privilage to user root to access database lims using following :
 <br>
+----------------------------------------------------------------------------
+$ sudo mysql -u root # for new installation
+
+mysql> USE mysql;
+mysql> UPDATE user SET plugin='mysql_native_password' WHERE User='root';
+mysql> FLUSH PRIVILEGES;
+mysql> exit;
+
+$ service mysql restart
+<br>
+----------------------------------------------------------------------------
+If your MySql is set with your password
+
+$ sudo mysql -u root -p
+
+- Then grant privilage using the above statements.
+- Provide your MySql root password into __init__.py file ; # mysql+pymysql://root:your_password@localhost/lims
+- $ service mysql restart
+<br>
+-----------------------------------------------------------------------------
 if problem persists refer
 <br>
 https://stackoverflow.com/questions/39281594/error-1698-28000-access-denied-for-user-rootlocalhost
@@ -43,7 +64,8 @@ https://stackoverflow.com/questions/39281594/error-1698-28000-access-denied-for-
 - [ ] Make a single route for all the book and which works on addition of any book in future.
 - [ ] Design better schema for database.
 - [ ] Remove dependency from sqlalchemy ORM and therefore dependent code should be proted to flask-sqlalchmey.
-- [ ] Better UI for account page 
+- [ ] Better UI for account page .
+- [ ] Improve Reccommendation by merging collaboration filtering,decision tree and content based methods.
 
 
 **Contributing**

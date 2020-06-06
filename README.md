@@ -12,33 +12,33 @@
 **Prerequisites**
 ------------------
 Install dependencies using pip3 install -r requirements.txt
-<br>
 
 start mysql using service mysql start and import database using
-<br>
-mysql -u root -p lims < dbexport.sql
-<br>
+
+``mysql -u root -p lims < dbexport.sql``
+
+
 grant privilage to user root to access database lims using following :
-<br>
 ----------------------------------------------------------------------------
+```
 $ sudo mysql -u root # for new installation
 
-mysql> USE mysql;<br>
-mysql> UPDATE user SET plugin='mysql_native_password' WHERE User='root';<br>
-mysql> FLUSH PRIVILEGES;<br>
+mysql> USE mysql;
+mysql> UPDATE user SET plugin='mysql_native_password' WHERE User='root';
+mysql> FLUSH PRIVILEGES;
 mysql> exit;
-<br>
+
 $ service mysql restart
-<br>
-----------------------------------------------------------------------------
+```
 If your MySql is set with your password
-<br>
+----------------------------------------------------------------------------
+```
 $ sudo mysql -u root -p
 
 - Then grant privilage using the above statements.<br>
 - Provide your MySql root password into __init__.py file ; # mysql+pymysql://root:your_password@localhost/lims<br>
 - $ service mysql restart
-<br>
+```
 -----------------------------------------------------------------------------
 <br>
 if problem persists refer
